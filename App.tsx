@@ -1,5 +1,5 @@
 import { FC, useState } from 'react';
-import { StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, Button, Alert, TextInput } from 'react-native';
+import { StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, Button } from 'react-native';
 
 
 const Brick: FC<{ onClick: () => void, getCurrentPlayer: () => number }> = (props) => {
@@ -8,35 +8,43 @@ const Brick: FC<{ onClick: () => void, getCurrentPlayer: () => number }> = (prop
     setPlayer(props.getCurrentPlayer())
     props.onClick()
   }
-  const getBackground = () => {
-    if (player == 0) {
-      return 'white'
-    } else if (player == 1) {
-      return 'red'
+  const playerX = () => {
+    if (player == 1) {
+      return "flex"
+    } else {
+      return "none"
     }
-    return 'green'
+  }
+  const playerO = () => {
+    if (player == 2) {
+      return "flex"
+    } else {
+      return "none"
+    }
   }
   return (
     <View style={styles.brick}>
-      <TouchableOpacity style={[styles.button, { backgroundColor: getBackground() }]} onPress={onClick}>
+      <TouchableOpacity></TouchableOpacity>
+      <TouchableOpacity style={[styles.button]} onPress={onClick} disabled={player ? true : false}>
+        <Image style={[styles.image, { display: playerX() }]} source={require("./assets/x.png")} />
+        <Image style={[styles.image, { display: playerO() }]} source={require("./assets/o.png")} />
       </TouchableOpacity>
     </View>
   )
 }
 const App: FC = () => {
   // 0: not selected, 1: 'x', 2: 'o'
-  var turn = 1
+  var currentPlayer = 1
 
   const getCurrentPlayer = () => {
-    return turn
+    return currentPlayer
   }
   const onBrickClick = () => {
-    console.log('onBrickClick')
-    if (turn == 1) {
-      turn = 2
-    } else {
-      turn = 1
-    }
+    if (currentPlayer == 1)
+      currentPlayer = 2
+    else
+      currentPlayer = 1
+    // ifWinner()
   }
 
   console.log("My app is running")
@@ -62,11 +70,45 @@ const App: FC = () => {
         <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
         <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
       </View>
-    </View >
+      <Button onPress={playAgain} title="play again"></Button>
+      <Text>player {getCurrentPlayer()}</Text>
+    </View>
   );
 }
 
 
+
+const ifWinner = (arr: number[]) => {
+  if (arr.indexOf(1) != -1 && arr.indexOf(2) != -1 && arr.indexOf(3) != -1) {
+
+  }
+  if (arr.indexOf(4) != -1 && arr.indexOf(5) != -1 && arr.indexOf(6) != -1) {
+
+  }
+  if (arr.indexOf(7) != -1 && arr.indexOf(8) != -1 && arr.indexOf(9) != -1) {
+
+  }
+  if (
+    arr.indexOf(1) != -1 && arr.indexOf(4) != -1 && arr.indexOf(7) != -1) {
+
+  }
+  if (arr.indexOf(2) != -1 && arr.indexOf(5) != -1 && arr.indexOf(8) != -1) {
+
+  }
+  if (arr.indexOf(3) != -1 && arr.indexOf(6) != -1 && arr.indexOf(9) != -1) {
+
+  }
+  if (arr.indexOf(1) != -1 && arr.indexOf(5) != -1 && arr.indexOf(9) != -1) {
+
+  }
+  if (arr.indexOf(3) != -1 && arr.indexOf(5) != -1 && arr.indexOf(7) != -1) {
+
+  }
+}
+
+const playAgain = () => {
+
+}
 const styles = StyleSheet.create({
   container: {
     marginTop: StatusBar.currentHeight,
@@ -75,7 +117,7 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
-    backgroundColor: 'blue',
+    backgroundColor: 'black',
   },
   brick: {
     flex: 1,
@@ -85,6 +127,15 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
+    height: 100,
+    width: 100,
+  },
+  image: {
+    flex: 1,
+    resizeMode: "contain",
+    aspectRatio: 1,
+    display: "none",
+
   },
 });
 
