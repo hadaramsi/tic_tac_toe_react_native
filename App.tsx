@@ -1,142 +1,134 @@
-import { FC, useState } from 'react';
-import { StatusBar, StyleSheet, Text, View, Image, TouchableOpacity, Button } from 'react-native';
-
-
-const Brick: FC<{ onClick: () => void, getCurrentPlayer: () => number }> = (props) => {
-  const [player, setPlayer] = useState(0)
+import { FC, useState } from 'react'
+import { StatusBar, StyleSheet, View, Image, Platform, TouchableOpacity } from 'react-native'
+import Constants from 'expo-constants'
+import images from './images'
+const statusBarHeightIOS = Constants.statusBarHeight
+const statusBarHeightAndroid = StatusBar.currentHeight
+const ifWin = (squares: Array<string>) => {
+  const winner = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ]
+  for (let i = 0; i < winner.length; i++) {
+    const [a, b, c] = winner[i];
+    if (squares[a] && (squares[a] == squares[b]) && (squares[a] == squares[c])) {
+      return squares[a]
+    }
+  }
+  return null
+}
+const Brick: FC<{ onClick: () => void, value: string }> = (props) => {
   const onClick = () => {
-    setPlayer(props.getCurrentPlayer())
     props.onClick()
-  }
-  const playerX = () => {
-    if (player == 1) {
-      return "flex"
-    } else {
-      return "none"
-    }
-  }
-  const playerO = () => {
-    if (player == 2) {
-      return "flex"
-    } else {
-      return "none"
-    }
   }
   return (
     <View style={styles.brick}>
-      <TouchableOpacity></TouchableOpacity>
-      <TouchableOpacity style={[styles.button]} onPress={onClick} disabled={player ? true : false}>
-        <Image style={[styles.image, { display: playerX() }]} source={require("./assets/x.png")} />
-        <Image style={[styles.image, { display: playerO() }]} source={require("./assets/o.png")} />
+      <TouchableOpacity style={styles.button} onPress={onClick}>
+        <Image source={
+          props.value == 'X' ? images.xPic : props.value === 'O' ? images.oPic : images.empty
+        }></Image>
       </TouchableOpacity>
     </View>
   )
 }
-const App: FC = () => {
-  // 0: not selected, 1: 'x', 2: 'o'
-  var currentPlayer = 1
 
-  const getCurrentPlayer = () => {
-    return currentPlayer
+const App: FC = () => {
+  const [squares, setSquares] = useState(Array(9).fill(null))
+  const [isX, setIsX] = useState(true);
+
+  const handleRestart = () => {
+    setIsX(true)
+    setSquares(Array(9).fill(null))
   }
-  const onBrickClick = () => {
-    if (currentPlayer == 1)
-      currentPlayer = 2
-    else
-      currentPlayer = 1
-    // ifWinner()
+
+  const handleClick = (i: number) => {
+    if (ifWin(squares) || squares[i]) { return }
+    squares[i] = isX ? 'X' : 'O';
+    setSquares(squares)
+    setIsX(!isX)
   }
+  const winner = ifWin(squares)
+  let status = winner ? `winner: ${winner}` : `player: ${isX ? 'X' : 'O'}`
 
   console.log("My app is running")
-
-  const onPressCallback = () => {
-    console.log("button was pressed")
-  }
 
   return (
     <View style={styles.container}>
       <View style={styles.row}>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
+        <Brick onClick={() => handleClick(0)} value={squares[0]}></Brick>
+        <Brick onClick={() => handleClick(1)} value={squares[1]}></Brick>
+        <Brick onClick={() => handleClick(2)} value={squares[2]}></Brick>
       </View>
       <View style={styles.row}>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
+        <Brick onClick={() => handleClick(3)} value={squares[3]}></Brick>
+        <Brick onClick={() => handleClick(4)} value={squares[4]}></Brick>
+        <Brick onClick={() => handleClick(5)} value={squares[5]}></Brick>
       </View>
       <View style={styles.row}>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
-        <Brick onClick={onBrickClick} getCurrentPlayer={getCurrentPlayer}></Brick>
+        <Brick onClick={() => handleClick(6)} value={squares[6]}></Brick>
+        <Brick onClick={() => handleClick(7)} value={squares[7]}></Brick>
+        <Brick onClick={() => handleClick(8)} value={squares[8]}></Brick>
       </View>
-      <Button onPress={playAgain} title="play again"></Button>
-      <Text>player {getCurrentPlayer()}</Text>
+      <View style={styles.container}>
+        <Image source={
+          status == `player: X` ? images.xplay
+            : status == `player: O` ? images.oplay
+              : status == `winner: X` ? images.xwin
+                : status == `winner: O` ? images.owin
+                  : images.empty
+        }
+        ></Image>
+      </View>
+      <View style={styles.centerContainer}>
+        <TouchableOpacity style={styles.button} onPress={handleRestart}>
+          <Image source={images.playAgain} style={styles.image}></Image>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
 
-
-
-const ifWinner = (arr: number[]) => {
-  if (arr.indexOf(1) != -1 && arr.indexOf(2) != -1 && arr.indexOf(3) != -1) {
-
-  }
-  if (arr.indexOf(4) != -1 && arr.indexOf(5) != -1 && arr.indexOf(6) != -1) {
-
-  }
-  if (arr.indexOf(7) != -1 && arr.indexOf(8) != -1 && arr.indexOf(9) != -1) {
-
-  }
-  if (
-    arr.indexOf(1) != -1 && arr.indexOf(4) != -1 && arr.indexOf(7) != -1) {
-
-  }
-  if (arr.indexOf(2) != -1 && arr.indexOf(5) != -1 && arr.indexOf(8) != -1) {
-
-  }
-  if (arr.indexOf(3) != -1 && arr.indexOf(6) != -1 && arr.indexOf(9) != -1) {
-
-  }
-  if (arr.indexOf(1) != -1 && arr.indexOf(5) != -1 && arr.indexOf(9) != -1) {
-
-  }
-  if (arr.indexOf(3) != -1 && arr.indexOf(5) != -1 && arr.indexOf(7) != -1) {
-
-  }
-}
-
-const playAgain = () => {
-
-}
 const styles = StyleSheet.create({
   container: {
-    marginTop: StatusBar.currentHeight,
+    marginTop: Platform.OS == 'android' ? statusBarHeightAndroid : statusBarHeightIOS,
     flex: 1,
-    backgroundColor: 'grey',
+    backgroundColor: 'grey'
   },
   row: {
     flexDirection: 'row',
-    backgroundColor: 'black',
+    backgroundColor: 'blue',
   },
   brick: {
     flex: 1,
     backgroundColor: 'white',
     margin: 5,
-    aspectRatio: 1,
+    aspectRatio: 1
   },
   button: {
     flex: 1,
     height: 100,
     width: 100,
   },
-  image: {
-    flex: 1,
-    resizeMode: "contain",
-    aspectRatio: 1,
-    display: "none",
 
+  centerContainer: {
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100%'
   },
+  image: {
+    height: 80,
+    width: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });
 
 export default App
