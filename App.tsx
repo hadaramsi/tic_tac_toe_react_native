@@ -31,7 +31,7 @@ const Brick: FC<{ onClick: () => void, value: string }> = (props) => {
     <View style={styles.brick}>
       <TouchableOpacity style={styles.button} onPress={onClick}>
         <Image source={
-          props.value == 'X' ? images.xPic : props.value === 'O' ? images.oPic : images.empty
+          props.value == 'X' ? images.x : props.value === 'O' ? images.o : images.empty
         }></Image>
       </TouchableOpacity>
     </View>

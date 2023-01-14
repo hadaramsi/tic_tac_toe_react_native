@@ -9,8 +9,8 @@ import oplay from './assets/oplay.gif'
 
 export default {
     'empty': empty,
-    'oPic': oPic,
-    'xPic': xPic,
+    'o': o,
+    'x': x,
     'oplay': oplay,
     'owin': owin,
     'xplay': xplay,
